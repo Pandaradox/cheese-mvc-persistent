@@ -17,10 +17,11 @@ public class Menu {
 	
 	@ManyToMany
 	private List<Cheese> cheeses;
-	private int id;
 	
 	@Id
 	@GeneratedValue
+	private int id;
+	
 	public String getName() {
 		return name;
 	}
