@@ -4,8 +4,14 @@
 <body class="container">
 <h1 th:text="${title}">Default Title</h1>
 <nav th:replace="fragments :: navigation"></nav>
-	<ul>
-		<li th:each="category : ${categories}" th:text="${#strings.capitalizeWords(category.name)}"></li>
-	</ul>
+	<table class="table">
+		<tr>
+			<th>Menus</th>
+		</tr>
+		<tr th:each="menu : ${menus}">
+			<td><a th:href="@{/menu/view/{id}(id=${menu.id})}" th:text="${menu.name}"></a></td>
+		</tr>
+	</table>
+<a href="/menu/add">Add Menu</a>
 </body>
 </html>

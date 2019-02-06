@@ -47,7 +47,9 @@ public class Cheese {
         this.description = description;
     }
 
-    public Cheese() { }
+    public Cheese() { 
+    	
+    }
 
     public int getId() {
         return id;

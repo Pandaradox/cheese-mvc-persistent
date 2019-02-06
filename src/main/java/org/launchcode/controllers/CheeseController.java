@@ -9,9 +9,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.validation.Valid;
 
@@ -33,7 +37,6 @@ public class CheeseController {
     public String index(Model model) {
     	
     	model.addAttribute("cheeses", cheeseDao.findAll());
-    	model.addAttribute("categories", categoryDao.findAll());
     	model.addAttribute("title", "My Cheeses");
 
         return "cheese/index";
@@ -60,7 +63,29 @@ public class CheeseController {
         cheeseDao.save(newCheese);
         return "redirect:";
     }
+    
+    @RequestMapping(value = "edit/{cheeseId}", method = RequestMethod.GET)
+    public String displayEditForm(Model model, @PathVariable int cheeseId) {
+    	
+    	model.addAttribute("cheese", cheeseDao.findOne(cheeseId));
+    	model.addAttribute("categories", categoryDao.findAll());
+    	model.addAttribute("title", "Edit the "+ cheeseDao.findOne(cheeseId).getName());
+    	
+    	return "cheese/edit";
+    }
+    
+    @RequestMapping(value = "edit/{cheeseId}", method = RequestMethod.POST)
+    public String processEditForm(@PathVariable int cheeseId, int categoryId, String name, String description, Model model) {
+    	
+    	Cheese theCheese = cheeseDao.findOne(cheeseId);
+    	theCheese.setName(name);
+    	theCheese.setDescription(description);
+    	theCheese.setCategory(categoryDao.findOne(categoryId));
+    	cheeseDao.save(theCheese);
 
+    	return "redirect:/cheese";
+    }
+    
     @RequestMapping(value = "remove", method = RequestMethod.GET)
     public String displayRemoveCheeseForm(Model model) {
         model.addAttribute("cheeses", cheeseDao.findAll());
@@ -78,4 +103,19 @@ public class CheeseController {
         return "redirect:";
     }
 
+    @RequestMapping(value="category/{catId}", method=RequestMethod.GET)
+	public String category(Model model, @PathVariable int catId) {
+    	List<Cheese> results = new ArrayList<>();
+    	
+    	for (Cheese cheese : cheeseDao.findAll()) {
+    		if (cheese.getCategory().equals(categoryDao.findOne(catId))) {
+    			results.add(cheese);
+    		}
+    	}
+    	
+    	model.addAttribute("cheeses", results);
+    	model.addAttribute("title", "Results for Category: "+categoryDao.findOne(catId).getName());
+    	
+    	return "cheese/index";
+    }
 }
